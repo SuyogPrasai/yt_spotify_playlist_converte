@@ -1,4 +1,4 @@
-import spotify
+
 from keys import *
 from pytube import Playlist
 import spotipy
