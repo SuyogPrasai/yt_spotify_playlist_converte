@@ -16,15 +16,15 @@ class Converter:
         self.sp_initialization = self.sp_init()
 
     def get_songs_yt(self) -> list:
-
-        
         plist = Playlist(self.yt_playlist_url)
         playlist_title = plist.title
         videos = plist.videos
         titles = []
-        for video in videos: 
+        print("[SONGS IN THE PLAYLIST]")
+        for index, video in enumerate(videos, 1): 
             titles.append(video.title)
-        print(titles)
+            print(f"({index}). [{video.title}]")
+        
 
         try: 
             plist = Playlist(self.yt_playlist_url)
@@ -72,9 +72,7 @@ class Converter:
         playlist_name = input("Enter the name of your playlist: ")
 
         user_id = sp.me()['id'] # Get the users id
-        # print(user_id)
         playlist = sp.user_playlist_create(user_id, playlist_name, public=True)
-        # print(playlists)
         sp.user_playlist_add_tracks(user_id, playlist['id'], uris)
         
 
@@ -83,10 +81,22 @@ def main() -> int:
 
     url = input("Enter the url of the playlist: ")
     ci.yt_playlist_url = url
-    songs = ci.get_songs_yt()
-    sp_songs_uris = ci.sp_get_playlist(songs)
-    # print(sp_songs_uris)
-    ci.sp_create_playlist(sp_songs_uris)
+    try:
+        songs = ci.get_songs_yt()
+        print("[INFO] Successfully fetched Audio from the youtube playlist")
+    except Exception as e: 
+        print("[ERROR] Failed to fetch songs from youtube", e)
+    try:
+        sp_songs_uris = ci.sp_get_playlist(songs)
+        print("[INFO] Succesfully scanned uris through spotify api")
+    except Exception as e:
+        print("[ERROR] Failed to fetch songs from spotify", e)
+    try:
+        ci.sp_create_playlist(sp_songs_uris)
+        print("[INFO] Successfully created the playlist")
+        print("[INFO] Check your spotify account")
+    except Exception as e: 
+        print("[ERROR] Failed to add playlist to spotify", e)
 
     return 0
 
